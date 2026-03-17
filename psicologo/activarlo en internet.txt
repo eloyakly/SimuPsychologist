@@ -1,0 +1,4 @@
+$env:WEBHOOK_URL='enlace generado cuando se libera el puerto desde visual code';npx n8n
+
+desde tu ordenador usando visual studio.
+$env:WEBHOOK_URL='https://tqjtb0g8-5678.use2.devtunnels.ms/';npx n8n

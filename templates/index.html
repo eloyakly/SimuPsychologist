@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mind ease - Bienestar mental guiado por IA</title>
+    <link rel="icon" href="{{ url_for('static', filename='logo - copia.png') }}" type="image/png">
+    <!-- Configuración unificada de Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3aed",
+                        "primary-hover": "#6d28d9",
+                        "primary-light": "#a78bfa",
+                        "primary-dark": "#4c1d95",
+                        "violet-accent": "#8b5cf6",
+                        "orchid": "#bf7af0",
+                        "lilac": "#d8b4fe",
+                        "accent-purple": "#8b5cf6",
+                        "background-light": "#ffffff", /* ACTUALIZADO: Blanco puro para una sensación premium */
+                        "background-dark": "#0f0a1a",
+                        "plum-dark": "#1a1025",
+                        "charcoal-purple": "#0f0a1a",
+                        "deep-violet": "#2e1065",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+
+    <!-- Lógica principal de la interfaz -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <style type="text/tailwindcss">
+        h1, h2, h3, h4 {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    .mesh-gradient {
+    background-color: #ffffff;
+    background-image:
+    radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.03) 0, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.03) 0, transparent 50%);
+    }
+    .dark .mesh-gradient {
+    background-color: #0f0a1a;
+    background-image:
+    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.12) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(191, 122, 240, 0.08) 0, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(26, 16, 37, 1) 0, transparent 100%);
+    }
+    .glass-card {
+    @apply backdrop-blur-xl bg-white/70 border border-slate-200 shadow-xl shadow-slate-200/50;
+    }
+    .dark .glass-card {
+    @apply bg-white/5 border-white/10;
+    }
+    .glow-effect {
+        box-shadow: 0 0 40px -10px rgba(124, 58, 237, 0.2);
+        transition: all 0.5s ease-in-out;
+    }
+    .glow-effect:hover {
+        box-shadow: 0 0 60px -5px rgba(124, 58, 237, 0.4);
+    }
+    .feature-icon-glass {
+    @apply flex items-center justify-center rounded-2xl bg-white border border-slate-200 shadow-sm transition-all;
+    }
+    .dark .feature-icon-glass {
+    @apply bg-gradient-to-br from-white/10 to-white/5 border-white/20 shadow-xl;
+    }
+    .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-700 via-primary to-orchid;
+    }
+    .dark .text-gradient {
+    @apply from-white via-lilac to-orchid;
+    }
+    .btn-purple-gradient {
+    @apply bg-gradient-to-r from-violet-accent to-primary transition-all duration-300 shadow-xl shadow-violet-900/20;
+    }
+    .dark .btn-purple-gradient {
+    @apply shadow-violet-900/40;
+    }
+    .noise {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.02;
+    z-index: 50;
+    background-image:
+    url(https://lh3.googleusercontent.com/aida-public/AB6AXuBSCsbpI4diu_owIOYGfLAWrUy-Hj8lmfq9aezbUTZLKpl_SrQ36oWKkjetn-xNEwmku16C9siKQNccjH1S88o_bZWn_MvfBqol4yiEx8Kb47JOP9ifOS-NxG3VfmCu8mZBqXSSOk3E2wqPza2swPcN3UBAcUzuvOAeC3Auzek2iH0HRRq2yflHQ0tDWVWGdMdotCIsygr_9qvPuaU58p5CajvgwRk6gWTjHeKmOxZ8Np5UYIqnKkrXhe-rl29SqNoVHZLobvqH338);
+    }
+    .theme-toggle-btn {
+    @apply relative flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 dark:border-white/10
+    bg-white/50 dark:bg-white/5 backdrop-blur-md transition-all hover:scale-110 active:scale-95 text-slate-600
+    dark:text-lilac;
+    }
+    #theme-toggle-light-icon, #theme-toggle-dark-icon {
+    display: none;
+    }
+    .dark #theme-toggle-dark-icon {
+    display: block;
+    }
+    html:not(.dark) #theme-toggle-light-icon {
+    display: block;
+    }
+    </style>
+</head>
+
+<body
+    class="mesh-gradient font-sans bg-background-light text-slate-900 overflow-x-hidden transition-colors duration-300 dark:bg-charcoal-purple dark:text-slate-300">
+    <div class="noise"></div>
+    <header
+        class="sticky top-0 z-[60] w-full border-b border-slate-200 dark:border-white/5 bg-white/70 dark:bg-charcoal-purple/60 backdrop-blur-xl">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
+            <div class="flex items-center gap-3">
+                <!-- Sección de Logo -->
+                <div class="logo-container" style="display: flex; justify-content: center; align-items: center;">
+                    <img src="{{ url_for('static', filename='logo120.png') }}" alt="Mind Ease Logo"
+                        style="width: 80px; height: 80px; border-radius: 50%; background-color: white;" />
+                </div>
+                <h2 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">Mind <span
+                        class="text-violet-accent dark:text-orchid">ease</span></h2>
+            </div>
+            <nav class="hidden md:flex items-center gap-12">
+                <a class="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-lilac transition-all tracking-wide"
+                    href="#inicio">Inicio</a>
+                <a class="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-lilac transition-all tracking-wide"
+                    href="#sobre-nosotros">Sobre Nosotros</a>
+                <a class="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-lilac transition-all tracking-wide"
+                    href="#caracteristicas">Tecnología</a>
+                <a class="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-lilac transition-all tracking-wide"
+                    href="#beneficios">Beneficios</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-4">
+                    <a href="{{ url_for('login') }}"
+                        class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors">Entrar</a>
+                    <a href="{{ url_for('registrar') }}"
+                        class="px-6 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-charcoal-purple text-sm font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg">
+                        Empezar
+                    </a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-toggle"
+                    class="md:hidden p-2 text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <button
+                    class="group flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-[#2d2744] bg-white dark:bg-[#1e1a2d] hover:bg-slate-50 dark:hover:bg-[#2d2744] transition-all duration-300"
+                    id="theme-toggle">
+                    <span class="material-symbols-outlined text-amber-400 group-hover:rotate-12 transition-transform"
+                        id="theme-toggle-dark-icon">light_mode</span>
+                    <span
+                        class="material-symbols-outlined text-primary-dark group-hover:-rotate-12 transition-transform"
+                        id="theme-toggle-light-icon">dark_mode</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu"
+            class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-charcoal-purple border-b border-slate-200 dark:border-white/5 shadow-xl transition-all duration-300 ease-in-out transform origin-top opacity-0 scale-95">
+            <div class="flex flex-col p-6 gap-4">
+                <a class="text-base font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-lilac"
+                    href="#inicio">Inicio</a>
+                <a class="text-base font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-lilac"
+                    href="#sobre-nosotros">Sobre Nosotros</a>
+                <a class="text-base font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-lilac"
+                    href="#caracteristicas">Tecnología</a>
+                <a class="text-base font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-lilac"
+                    href="#beneficios">Beneficios</a>
+                <div class="h-px bg-slate-200 dark:bg-white/10 my-2"></div>
+                <div class="flex flex-col gap-3 sm:hidden">
+                    <a href="{{ url_for('login') }}"
+                        class="text-center w-full py-2.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        Entrar
+                    </a>
+                    <a href="{{ url_for('registrar') }}"
+                        class="text-center w-full py-2.5 rounded-lg bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20">
+                        Empezar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="relative z-10">
+        <section class="relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-40" id="inicio">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-12">
+                    <div class="lg:col-span-7 flex flex-col gap-10">
+                        <div class="space-y-6">
+                            <div
+                                class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-violet-700 dark:text-lilac border border-primary/20">
+                                <span class="material-symbols-outlined text-[16px] leading-none">verified_user</span>
+                                Privacidad de grado militar
+                            </div>
+                            <h1
+                                class="text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white md:text-7xl">
+                                Tu bienestar mental, <br />
+                                <span class="text-gradient">guiado por IA.</span>
+                            </h1>
+                            <p class="max-w-xl text-lg font-medium leading-relaxed text-slate-600 dark:text-slate-400">
+                                Mind ease es una plataforma de simulación terapéutica de vanguardia. Un puente
+                                seguro y profesional hacia tu equilibrio emocional.
+                            </p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-5">
+                            <a href="{{ url_for('registrar') }}"
+                                class="btn-purple-gradient flex h-16 items-center justify-center rounded-2xl px-10 text-lg font-bold text-white hover:brightness-110 hover:translate-y-[-2px]">
+                                Probar demo gratuita
+                            </a>
+                            <button
+                                class="flex h-16 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 px-10 text-lg font-bold text-slate-800 dark:text-white backdrop-blur-md transition-all hover:bg-white/80 dark:hover:bg-white/10">
+                                Conocer más
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 relative">
+                        <div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full"></div>
+                        <div
+                            class="relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-plum-dark/40 shadow-2xl p-2 group">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-tr from-slate-100 dark:from-charcoal-purple via-transparent to-transparent z-10">
+                            </div>
+                            <img alt="Interface Support"
+                                class="h-full w-full object-cover rounded-[2.2rem] opacity-70 grayscale dark:opacity-40 group-hover:grayscale-0 group-hover:opacity-100 dark:group-hover:opacity-60 transition-all duration-700"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFUEyHWDh1Ij-Q2CHEMj6dEMb6yOqicL1nCupnlXF062wdgwu9xci9OiKSzK_9XAXGDYk3mwN3kan6k3UVVPmFx9N-0ZUrsOQU4nQ4j0UR_5cOpLgEFYFIpro9oUpEDMu4Iwu5c9sKo_sOMcx5jxLgY_8aroPxI3RWfVJPGMzKZhmz-6R8zn2BXYzd-eek53MM9s2qF5uNWVVViqWylMhhoouEiBihEWj24OdQYV9O5CnxMu8pO-MgAF3PnKO7Lf4_Kqr6LQHJGEc" />
+                            <div
+                                class="absolute bottom-8 left-8 right-8 z-20 rounded-2xl bg-white/80 dark:bg-white/10 p-6 backdrop-blur-2xl border border-white/20 shadow-2xl">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="h-12 w-12 shrink-0 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                                        <span class="material-symbols-outlined text-white">neurology</span>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-[10px] font-bold text-violet-600 dark:text-lilac uppercase tracking-[0.2em] mb-1">
+                                            Simu Intelligence</p>
+                                        <p class="text-sm font-medium text-slate-800 dark:text-white leading-relaxed">
+                                            "Analizando tus patrones de pensamiento para ofrecerte la mejor estructura
+                                            de apoyo hoy."</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-32 relative" id="sobre-nosotros">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="flex flex-col lg:flex-row gap-16 items-center">
+                    <div class="lg:w-1/2">
+                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-8 tracking-tight">Sobre <span
+                                class="text-violet-600 dark:text-orchid">Nosotros</span></h2>
+                        <div
+                            class="relative p-1 rounded-3xl bg-gradient-to-br from-slate-200 dark:from-white/10 to-transparent">
+                            <div
+                                class="bg-white/60 dark:bg-plum-dark/60 backdrop-blur-xl p-10 rounded-[1.4rem] border border-white/5">
+                                <p
+                                    class="text-2xl font-semibold text-violet-700 dark:text-lilac leading-snug italic mb-8">
+                                    "Un primer paso hacia tu bienestar, con la calidez de la tecnología y el respeto por
+                                    lo humano."
+                                </p>
+                                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                                    Mind ease nace como una herramienta de <strong>pre-terapia</strong>. No
+                                    buscamos reemplazar la ayuda profesional, sino facilitar la transición hacia ella,
+                                    ayudando a las personas a estructurar sus sentimientos y reducir la ansiedad social.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 grid grid-cols-2 gap-6 pt-12">
+                        <div
+                            class="glow-effect h-48 rounded-3xl bg-white dark:bg-white/5 border border-primary/20 dark:border-white/5 flex flex-col justify-end p-6 hover:border-primary/40 transition-all hover:scale-[1.02] shadow-sm dark:shadow-none">
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">98%</div>
+                            <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                                Satisfacción</p>
+                        </div>
+                        <div
+                            class="glow-effect h-48 rounded-3xl bg-white dark:bg-white/5 border border-primary/20 dark:border-white/5 flex flex-col justify-end p-6 mt-12 hover:border-orchid/40 transition-all hover:scale-[1.02] shadow-sm dark:shadow-none">
+                            <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1">24/7</div>
+                            <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                                Disponibilidad</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-32 bg-slate-100 dark:bg-deep-violet/10" id="caracteristicas">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="mb-20 space-y-4 max-w-2xl">
+                    <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white md:text-5xl">
+                        Tecnología que <span class="text-violet-600 dark:text-orchid">entiende</span>.
+                    </h2>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 font-medium">
+                        Sistemas avanzados de IA diseñados para una interacción humana profunda y ética.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+                    <div
+                        class="glow-effect group relative p-8 rounded-[2rem] bg-white dark:bg-white/5 border border-primary/20 dark:border-white/10 transition-all hover:shadow-xl dark:hover:bg-white/[0.08] hover:translate-y-[-8px]">
+                        <div
+                            class="feature-icon-glass h-16 w-16 mb-8 text-violet-600 dark:text-orchid group-hover:text-white group-hover:bg-primary transition-all duration-500">
+                            <span class="material-symbols-outlined text-4xl">language</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">NLP Avanzado</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Procesamiento de lenguaje natural de última generación para captar cada matiz emocional en
+                            la conversación.
+                        </p>
+                    </div>
+                    <div
+                        class="glow-effect group relative p-8 rounded-[2rem] bg-white dark:bg-white/5 border border-primary/20 dark:border-white/10 transition-all hover:shadow-xl dark:hover:bg-white/[0.08] hover:translate-y-[-8px]">
+                        <div
+                            class="feature-icon-glass h-16 w-16 mb-8 text-violet-600 dark:text-orchid group-hover:text-white group-hover:bg-primary transition-all duration-500">
+                            <span class="material-symbols-outlined text-4xl">memory</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Memoria Dinámica</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Sistema de contexto persistente que permite recordar el hilo de sesiones anteriores para un
+                            progreso real.
+                        </p>
+                    </div>
+                    <div
+                        class="glow-effect group relative p-8 rounded-[2rem] bg-white dark:bg-white/5 border border-primary/20 dark:border-white/10 transition-all hover:shadow-xl dark:hover:bg-white/[0.08] hover:translate-y-[-8px]">
+                        <div
+                            class="feature-icon-glass h-16 w-16 mb-8 text-violet-600 dark:text-orchid group-hover:text-white group-hover:bg-primary transition-all duration-500">
+                            <span class="material-symbols-outlined text-4xl">gavel</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Protocolos Éticos</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Seguridad ante todo. Implementamos límites claros y detección de crisis bajo estándares
+                            internacionales.
+                        </p>
+                    </div>
+                    <div
+                        class="glow-effect group relative p-8 rounded-[2rem] bg-white dark:bg-white/5 border border-primary/20 dark:border-white/10 transition-all hover:shadow-xl dark:hover:bg-white/[0.08] hover:translate-y-[-8px]">
+                        <div
+                            class="feature-icon-glass h-16 w-16 mb-8 text-violet-600 dark:text-orchid group-hover:text-white group-hover:bg-primary transition-all duration-500">
+                            <span class="material-symbols-outlined text-4xl">enhanced_encryption</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Anonimato Total</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                            Tus datos son tuyos. Encriptación punto a punto y eliminación periódica de identificadores
+                            personales.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-32" id="beneficios">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="mb-16 text-center">
+                    <h2
+                        class="text-3xl font-bold text-slate-900 dark:text-white md:text-5xl font-display tracking-tight">
+                        Potencia tu Salud Mental</h2>
+                </div>
+                <div
+                    class="glow-effect overflow-hidden rounded-[2.5rem] border border-slate-200 dark:border-white/5 bg-white/40 dark:bg-plum-dark/40 backdrop-blur-md">
+                    <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <div class="p-12 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-white/10">
+                            <div
+                                class="mb-12 inline-block px-4 py-1 rounded-full border border-primary/30 text-[10px] font-bold uppercase tracking-widest text-violet-700 dark:text-lilac">
+                                Enfoque Usuario</div>
+                            <div class="space-y-12">
+                                <div class="group">
+                                    <h5
+                                        class="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-orchid transition-colors">
+                                        Accesibilidad 24/7</h5>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Disponible en
+                                        cualquier momento de crisis o introspección, sin esperas ni citas previas.</p>
+                                </div>
+                                <div class="group">
+                                    <h5
+                                        class="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-orchid transition-colors">
+                                        Libre de Juicios</h5>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">La neutralidad
+                                        algorítmica fomenta una honestidad radical imposible en otros entornos.</p>
+                                </div>
+                                <div class="group">
+                                    <h5
+                                        class="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-orchid transition-colors">
+                                        Reducción de Ansiedad</h5>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Ensaya la interacción
+                                        terapéutica y rompe la barrera del miedo inicial.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-12 bg-slate-50/50 dark:bg-white/[0.01]">
+                            <div
+                                class="mb-12 inline-block px-4 py-1 rounded-full border border-orchid/30 text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-orchid">
+                                Base Tecnológica</div>
+                            <div class="space-y-12 text-slate-500 font-medium">
+                                <div
+                                    class="h-24 flex items-center border-b border-slate-200 dark:border-white/5 italic">
+                                    Infraestructura escalable con respuesta en tiempo real.</div>
+                                <div
+                                    class="h-24 flex items-center border-b border-slate-200 dark:border-white/5 italic">
+                                    Modelos de lenguaje entrenados en empatía y ética clínica.</div>
+                                <div class="h-24 flex items-center italic">Sistemas de categorización mediante redes
+                                    neuronales profundas.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto max-w-7xl px-6 py-24">
+            <div
+                class="relative overflow-hidden rounded-[3rem] bg-slate-900 dark:bg-plum-dark px-8 py-20 text-center border border-white/10 dark:border-primary/20 shadow-2xl">
+                <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"></div>
+                <div class="relative z-10 flex flex-col items-center gap-10">
+                    <div class="space-y-4">
+                        <h2 class="text-4xl font-extrabold tracking-tight md:text-6xl text-white">
+                            ¿Listo para empezar tu viaje?
+                        </h2>
+                        <p class="mx-auto max-w-2xl text-lg text-slate-300 italic font-medium">
+                            "Un primer paso hacia tu bienestar, con la calidez de la tecnología y el respeto por lo
+                            humano."
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
+                        <a href="{{ url_for('login') }}"
+                            class="btn-purple-gradient px-12 h-16 rounded-2xl flex items-center justify-center text-white text-lg font-bold hover:brightness-110 transition-all transform hover:scale-105">
+                            Iniciar sesión gratuita
+                        </a>
+                        <button
+                            class="px-12 h-16 rounded-2xl border border-white/10 bg-white/5 text-white text-lg font-bold backdrop-blur-md hover:bg-white/10 transition-all">
+                            Solicitar información
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="border-t border-slate-200 dark:border-white/5 bg-white dark:bg-charcoal-purple pt-20 pb-12">
+        <div class="mx-auto max-w-7xl px-6">
+            <div class="grid grid-cols-2 gap-16 md:grid-cols-4 lg:grid-cols-5">
+                <div class="col-span-2 flex flex-col gap-6">
+                    <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+                        <img src="{{ url_for('static', filename='logo120.png') }}" alt="Mind ease" class="h-20 w-20">
+                        <span class="text-xl tracking-tight">Mind <span
+                                class="text-violet-accent dark:text-orchid">ease</span></span>
+                    </div>
+                    <p class="text-sm text-slate-500 leading-relaxed max-w-xs">
+                        Redefiniendo el acceso a la salud mental mediante simulaciones éticas de última generación.
+                    </p>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-widest">Producto</h4>
+                    <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors"
+                                href="#">Simulador</a></li>
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors"
+                                href="#">Seguridad</a></li>
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors"
+                                href="#">Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-widest">Compañía</h4>
+                    <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors" href="#">Nosotros</a>
+                        </li>
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors" href="#">Misión</a>
+                        </li>
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors" href="#">Contacto</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-widest">Legal</h4>
+                    <ul class="flex flex-col gap-4 text-sm text-slate-500">
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors" href="#">Términos</a>
+                        </li>
+                        <li><a class="hover:text-primary dark:hover:text-orchid transition-colors"
+                                href="#">Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="mt-20 border-t border-slate-200 dark:border-white/5 pt-10 flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] text-slate-500 dark:text-slate-600 uppercase tracking-[0.2em] font-bold">
+                <p>© 2026 Mind <span class="text-violet-accent dark:text-orchid">ease</span>. Excelencia en bienestar
+                    IA.</p>
+                <div class="flex gap-8">
+                    <a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">LinkedIn</a>
+                    <a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Twitter</a>
+                    <a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Instagram</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Script de desplazamiento suave -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('opacity-100', 'scale-100');
+                    mobileMenu.classList.add('opacity-0', 'scale-95');
+                }
+            });
+        });
+
+        // Mobile Menu Logic
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuToggle && mobileMenu) {
+            mobileMenuToggle.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.remove('hidden');
+                    // Small delay to allow display:block to apply before transition
+                    setTimeout(() => {
+                        mobileMenu.classList.remove('opacity-0', 'scale-95');
+                        mobileMenu.classList.add('opacity-100', 'scale-100');
+                    }, 10);
+                } else {
+                    mobileMenu.classList.remove('opacity-100', 'scale-100');
+                    mobileMenu.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                    }, 300);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
