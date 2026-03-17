@@ -33,7 +33,7 @@ El núcleo de la lógica de negocio reside en un flujo de trabajo automatizado:
 Este proyecto utiliza **n8n** para la orquestación de eventos.
 
 1. Instala n8n (vía Desktop, Docker o Cloud).
-2. Importa el archivo `Psicologo n8n.json` (ubicado en la carpeta `/psicolog`) en tu instancia de n8n.
+2. Importa el archivo `Psicologo n8n.json` (ubicado en la carpeta `/psicologo`) en tu instancia de n8n.
 3. Asegúrate de configurar las URL de Webhook en tu archivo `.env` o directamente en el código de Flask para que apunten a tu instancia activa de n8n.
 
 ## 🚀 Instalación y Uso
