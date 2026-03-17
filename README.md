@@ -1,13 +1,13 @@
 # 🚀 SimuPsychologist
 
-> Simulador inteligente de agendamiento y atención psicológica que automatiza el flujo de pacientes mediante n8n.
+> Simulador inteligente de atención psicológica que simula la cita con un psicologo mediante n8n.
 
 [![Status](https://img.shields.io/badge/Status-En%20Desarrollo-green)]()
 [![n8n](https://img.shields.io/badge/Automation-n8n-FF6D5B?logo=n8n&logoColor=white)]()
 
 ## 📌 Descripción
 
-**SimuPsychologist** es una plataforma diseñada para replicar la experiencia de agendamiento y consulta inicial de un consultorio psicológico.
+**SimuPsychologist** es una plataforma diseñada para replicar la experiencia de una consulta inicial de un consultorio psicológico.
 
 El sistema permite a los usuarios interactuar con una interfaz moderna donde pueden probar el flujo de una cita simulada. Mientras el **Frontend** captura la interacción, el **Backend en Flask** gestiona el registro de usuarios y la persistencia de datos, y el **Bot de n8n** se encarga de procesar las solicitudes de manera asíncrona y eficiente.
 
