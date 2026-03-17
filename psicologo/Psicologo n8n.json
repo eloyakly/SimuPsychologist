@@ -1,0 +1,155 @@
+{
+  "name": "Psicologo",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mi nombre es: {{ $json.body.Usuario }}.\n{{ $json.body.mensaje }}",
+        "options": {
+          "systemMessage": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "c9a6673a-20d9-4478-ac43-a1d5898c4d1c",
+      "name": "AI Agent",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b11c40e2-1bf8-4c46-b854-4e4ff79fc2be",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -416,
+        -48
+      ],
+      "id": "41c166d9-268a-45e2-a463-1bd255d00303",
+      "name": "Webhook",
+      "webhookId": "b11c40e2-1bf8-4c46-b854-4e4ff79fc2be"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        160,
+        -48
+      ],
+      "id": "efb3092a-2164-4160-a133-d978cf850a1f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        176
+      ],
+      "id": "c5971dec-fdea-49e5-905f-e08e3f7f4ce5",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "iACjy9XfmffLHgW6",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.id_usuario }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        176
+      ],
+      "id": "51555022-5294-4fda-a665-c7f5c1842ce0",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "3721548b-cdbf-44d0-a367-2b465889fdf2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0e160c7b0278a61eee90aef484fb3f282da27101b4970e2bdffaef0af9655a6e"
+  },
+  "id": "4xkgfpbEkVYx2YTHnR2Ua",
+  "tags": []
+}
